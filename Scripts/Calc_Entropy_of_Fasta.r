@@ -17,26 +17,45 @@ OUTPUT_FODLER_FULL_PATH <- args[3]
 OUTPUT_FODLER_FULL_PATH <- paste(OUTPUT_FODLER_FULL_PATH,Name_of_Protein,sep='/')
 OUTPUT_FODLER_FULL_PATH <- paste(OUTPUT_FODLER_FULL_PATH,'.entr',sep='')
 
+OUTPUT_LENGTH <- args[3]
+OUTPUT_LENGTH <- paste(OUTPUT_LENGTH,'Protein_Lengths.txt',sep='/')
+
+
 
 #### 
 print(Name_of_Protein)
 
+###
+##### Clean up columns with missing value
+GAPS=which(Fasta_alignment$ali=='-',arr.ind=TRUE) ## Find columns with gaps
+if (length(GAPS[,2])>0){
+	Fasta_alignment$ali <- Fasta_alignment$ali[,-(GAPS[,2])] ## Remove them from alignment, use the rest for entropy
+	}
+
+
+####
 #### Calculate Entropy etc
-Entropy_Metrics <- entropy(Fasta_alignment)
-Entropy_Pure <- Entropy_Metrics$H      ### Standard Entropy Score for a 22-letter alpahabet
-Entropy_Norm <- Entropy_Metrics$H.norm ### Normalised entropy score ## seems to be reverse
+if (length(Fasta_alignment$ali)>0){
 
-## Get Average Metrics
-Protein_Mean_Entropy<- ( sum(Entropy_Pure) / length(Entropy_Pure) )
-Protein_Mean_Entropy_Normalised<- ( sum(Entropy_Norm) / length(Entropy_Norm) )
+	Entropy_Metrics <- entropy(Fasta_alignment)
+	Entropy_Pure <- Entropy_Metrics$H      ### Standard Entropy Score for a 22-letter alpahabet
+	Entropy_Norm <- Entropy_Metrics$H.norm ### Normalised entropy score ## seems to be reverse
 
-
-# ConsensusS <- consensus(Fasta_alignment)
-# ConsensusSequence <- ConsensusS$seq #### The consensus Sequence if we want it
+	## Get Average Metrics
+	Protein_Mean_Entropy<- ( sum(Entropy_Pure) / length(Entropy_Pure) )
+	Protein_Mean_Entropy_Normalised<- ( sum(Entropy_Norm) / length(Entropy_Norm) )
 
 
-OUTPUT=paste(Protein_Mean_Entropy,'\n',sep='')
-# OUTPUT=paste(Protein_Mean_Entropy)
+	# ConsensusS <- consensus(Fasta_alignment)
+	# ConsensusSequence <- ConsensusS$seq #### The consensus Sequence if we want it
 
-##### Output
-write(OUTPUT, file=OUTPUT_FODLER_FULL_PATH,append = TRUE)
+
+	OUTPUT=paste(Protein_Mean_Entropy,'\n',sep='')
+	# OUTPUT=paste(Protein_Mean_Entropy)
+	LENGTH=length(Fasta_alignment$ali)
+	LENGTH=paste(LENGTH,'\n',sep='')
+	
+	##### Output
+	write(OUTPUT, file=OUTPUT_FODLER_FULL_PATH,append = TRUE)
+	write(LENGTH, file=OUTPUT_LENGTH,append = TRUE)
+}

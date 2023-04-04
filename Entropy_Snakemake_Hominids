@@ -16,7 +16,7 @@ import shutil
 ################################################################################################################ SET UP ################################################################################################################################################################################################################################
 
 ##### How many repetitions
-SAMPLES=[x for x in range(0,5)]
+SAMPLES=[x for x in range(0,100)]
 
 
 
@@ -130,11 +130,13 @@ rule Combine_Entropies_Per_Protein_Hominids:
         expand('Complete_Runs/{sample}/{sample}_Entropy',sample=SAMPLES)
         
     output:
-        temp('Entropies_Hominids/Combined_Entropies')
+        'Entropies_Hominids/Combined_Entropies'
     threads:1
     run:
+        shell('python3 Scripts/Combine_Entropies.py Entropies_Hominids Entropies_Hominids/Combined_Entropies Entropies_Hominids/Protein_Lengths.txt')
         shell('rm -rf Complete_Runs')
-        shell('python3 Scripts/Combine_Entropies.py Entropies_Hominids Entropies_Hominids/Combined_Entropies')
+        # shell('rm -rf Entropies_Hominids/Protein_Lengths.txt')
+        
 
 
 
